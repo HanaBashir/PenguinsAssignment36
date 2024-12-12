@@ -1,0 +1,550 @@
+---
+title: "Penguin Assignment"
+output:
+  html_document: default
+  pdf_document: default
+date: "2024-12-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE, include=FALSE}
+#install.packages("knitr")
+#install.packages("rmarkdown")
+#install.packages("tidyverse")
+#install.packages("Palmerpenguins")
+#install.packages("janitor")
+#install.packages("tinytex")
+#install.packages("svglite")
+#install.packages("dplyr")
+#install.packages("readr")
+```
+
+```{r include = FALSE}
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(palmerpenguins)
+library(here)
+library(janitor) 
+library(tinytex)
+library(svglite)
+library(dplyr)
+library(readr)
+```
+
+```{r echo = FALSE, include=FALSE}
+
+#Displaying the first six rows of the data set to get an initial understanding of what I am working with.
+head(penguins_raw)
+
+#Displaying the column names of the dataset
+colnames(penguins_raw)
+
+#Saving raw data as 'penguins_raw' in the "data" folder to preserve it
+write_csv(penguins_raw, here("data", "penguins_raw.csv"))
+
+#Loading the raw data 
+penguins_raw <- read.csv(here("data", "penguins_raw.csv"))
+
+#Check column names before running the raw data through function
+colnames(penguins_raw)
+
+# Sourcing the function to clean my data. This executes the code in the cleaning.R file present in my github repository. In terms of reproducibility, I've chosen to code my function in a separate file as this means if I ever need to edit it, I only need to edit the code in cleaning.R and then use source() in my main script. This mitigates having to rewrite the code that defines the function if I've used it across multiple scripts. 
+source("functions/cleaning.r")
+
+# Running the raw penguin data through two functions that I defined in cleaning.R.  
+penguins_clean <- penguins_raw %>%
+    cleaning_penguin_data() %>%  #The cleaning_penguin_data() function removes columns named 'Comments', removes columns starting with 'Delta', converts column names to snake_case and removes rows and columns that are empty.
+    shorten_species() #The shorten_species() function shortens the species names to Adelie, Chinstrap and Gentoo rather then their full species names.
+
+# Checking the output of the function to make sure data is cleaned
+colnames(penguins_clean)
+```
+
+*The following is a template .rmd RMarkdown file for you to use for your homework submission.*
+
+*Please Knit your .rmd to a PDF format or HTML and submit that with no identifiers like your name.*
+
+*To create a PDF, first install tinytex and load the package. Then press the Knit arrow and select "Knit to PDF".*
+
+## QUESTION 01: Data Visualisation for Science Communication
+
+*Create a figure using the Palmer Penguin dataset that is correct but badly communicates the data. **Do not make a boxplot**.*
+
+*Use the following references to guide you:*
+
+-   [*https://www.nature.com/articles/533452a*](https://www.nature.com/articles/533452a){.uri}
+-   [*https://elifesciences.org/articles/16800*](https://elifesciences.org/articles/16800){.uri}
+
+*Note: Focus on visual elements rather than writing misleading text on it.*
+
+### a) Provide your figure here:
+
+```{r bad figure code, echo=FALSE}
+
+ggplot(data = penguins_clean, aes(x = culmen_depth_mm, y = flipper_length_mm)) +
+         geom_point(colour = "green") +
+         geom_smooth(method = "lm", colour = "red", fill = "green") + xlim(15, 30)+
+  xlab("culmen depth") +
+  ylab("flipper length") 
+
+# There is no need to provide the code for your bad figure, just use echo=FALSE so the code is hidden. Make sure your figure is visible after you knit it. 
+
+```
+
+The below code shows what the good figure looks like and highlights the true correlation that was obscured previously.
+
+```{r good figure code}
+ggplot(data = penguins_clean, aes(x = culmen_depth_mm, y = flipper_length_mm, colour = species)) +
+         geom_point() +
+         geom_smooth(method = "lm") + 
+scale_color_manual(values = c("Adelie" = "orange", "Chinstrap" = "blue", "Gentoo" = "purple")) +
+  theme_bw()
+```
+
+### b) Write about how your design choices mislead the reader about the underlying data (200-300 words).
+
+*Include references.*
+
+The first misleading aspect is that the data hasn't been subset by species and as a result the true correlation has been obscured. This is because in the bad plot when we look at the unsubset data and apply a regression line we see what appears to be a very significant negative relationship between culmen depth and flipper length. As culmen dept increases, flipper length seems to decrease. By contrast, when we subset the data according to species so that each colour represents a different species, we see that actually each regression line appears to show a positive relationship between culmen depth and flipper length. As such, not subsetting the data has actually obscured the fact that there is a positive relationship. This particular effect is known as Simpson's Paradox which is a statistical phenomenon where combining groups can result in the reverse trend compared to what is seen when the groups are viewed separately [1].
+
+The second way that the plot is misleading because the axes has been altered such that the data is significantly compressed into the left half of the graph. Not only does it make it difficult to read individual data points, it also means that the regression line looks like it has a much steeper gradient than it does when the data isn't compressed. Inapropriate use of axes is common in scientific literature [2]. Also, the axes have no units rendering the graph's information effectively useless.
+
+Finally, the red and green colour scheme isn't color blind friendly and makes the regression line and confidence interval shading indistinguishable. This leaves the plot ineffective at communicating the data. For those who don't have colour blindess, the use of fluorescent green against the grey background creates a distracting glare that additionally reduces ease in immediately reading the figure.
+
+[1]Selvitella, A. The ubiquity of the Simpson’s Paradox. J Stat Distrib App 4, 2 (2017). <https://doi.org/10.1186/s40488-017-0056-5>
+
+[2] Franzblau, L. E., & Chung, K. (2012). Graphs, Tables, and Figures in Scientific Publications: The Good, the Bad, and How Not to Be the Latter. The Journal of Hand Surgery, 37(3), 591-596. <https://doi.org/10.1016/j.jhsa.2011.12.041>
+
+------------------------------------------------------------------------
+
+## QUESTION 2: Data Pipeline
+
+*Write a data analysis pipeline in your .rmd RMarkdown file. You should be aiming to write a clear explanation of the steps, the figures visible, as well as clear code.*
+
+*Your code should include the steps practiced in the lab session:*
+
+-   *Load the data*
+
+-   *Appropriately clean the data*
+
+-   *Create an Exploratory Figure (**not a boxplot**)*
+
+-   *Save the figure*
+
+-   ***New**: Run a statistical test*
+
+-   ***New**: Create a Results Figure*
+
+-   *Save the figure*
+
+*An exploratory figure shows raw data, such as the distribution of the data. A results figure demonstrates the stats method chosen, and includes the results of the stats test.*
+
+*Between your code, communicate clearly what you are doing and why.*
+
+*Your text should include:*
+
+-   *Introduction*
+
+-   *Hypothesis*
+
+-   *Stats Method*
+
+-   *Results*
+
+-   *Discussion*
+
+-   *Conclusion*
+
+*You will be marked on the following:*
+
+### a) Your code for readability and functionality
+
+### b) Your figures for communication
+
+### c) Your text communication of your analysis
+
+*Below is a template you can use.*
+
+------------------------------------------------------------------------
+
+The first thing I will do is save my raw data to a separate folder called 'data' before I start meddling with it. This is critical for reproducibility as it allows users to reproduce my analysis starting from the raw data. I've used a separate folder so that my code is organised, making it easier for other users to find the raw data. I then load my data into the script and and save it as an object called 'penguins_raw'.
+
+```{r Data Loading}
+#Saving the raw data as 'penguins_raw' in the "data" folder to preserve it
+write_csv(penguins_raw, here("data", "penguins_raw.csv"))
+
+#Loading my raw penguin data using the here() function. I have chosen to do this instead of using the raw file path as it is more reproducible
+penguins_raw <- read.csv(here("data", "penguins_raw.csv"))
+
+#Displaying the first six rows of the data set to get an initial understanding of what I am working with.
+head(penguins_raw)
+
+#Displaying the column names of the dataset
+colnames(penguins_raw)
+```
+
+Data Cleaning:
+
+Now I will clean the dataset using functions that have been defined in a separate cleaning.R script (found in the GitHub Repository) and assign this to the object 'penguins_clean'. This is because there are some columns which contain data such as additional comments about each penguin and blood info which isn't relevant for this analysis pipeline. I'm also shortening the species names to make it easier to refer to them in my code. I'm also importantly converting the column names to make them computer readable as at the moment they are not.
+
+```{r Data Cleaning}
+
+#Check column names before running the raw data through function
+colnames(penguins_raw)
+
+# Sourcing the function to clean my data. This executes the code in the cleaning.R file present in my github repository. In terms of reproducibility, I've chosen to code my function in a separate file as this means if I ever need to edit it, I only need to edit the code in cleaning.R and then use source() in my main script. This mitigates having to rewrite the code that defines the function if I've used it across multiple scripts. 
+source("functions/cleaning.r")
+
+# Running the raw penguin data through two functions that I defined in cleaning.R.  
+penguins_clean <- penguins_raw %>%
+    cleaning_penguin_data() %>%  #The cleaning_penguin_data() function removes columns named 'Comments', removes columns starting with 'Delta', converts column names to snake_case and removes rows and columns that are empty.
+    shorten_species() #The shorten_species() function shortens the species names to Adelie, Chinstrap and Gentoo rather then their full species names.
+
+# Checking the output of the function to make sure data is cleaned
+colnames(penguins_clean)
+```
+
+After loading, saving and cleaning the raw data, I will now begin my analysis pipeline below.
+
+### Introduction
+
+This script involves analysis of a dataset within the PalmerPenguins package in R studio. The raw data contains information about three species of penguins (Adelie, Gentoo and Chinstrap) across three different islands (Torgersen, Biscoe and Dream) in the Anvers region of the Palmer archipelago, Antarctica. It was collected between 2007 and 2009, and there are 344 observations and 17 variables. Penguins are highly specialised diving birds and as such, in this specific analysis I intend to use the data to explore whether there is a correlation between the body mass and flipper length in Gentoo penguins. If there is, This is because I would expect there would be a relationship as it makes sense that to maintain a specialised ability to dive efficiently, penguins would have some kind of proportionality associated with flipper length and body mass.
+
+**Creating an exploratory scatter plot**
+
+I will first create an exploratory scatter plot to examine the relationship between body mass and flipper length data. I have chosen to do this before modelling my data so that I can check that it's looking the way I expect, and quickly demonstrate the shape of the data which will help to formulate an appropriate hypothesis. I am subsetting my data to include only Gentoo penguins as these are what I want to investigate.
+
+```{r Data Exploration}
+
+#Creating an object containing only the gentoo data
+
+gentoo_dataset <- penguins_clean %>%  # inputting the penguin_clean data into the function
+  na.omit() %>%  # removes NAs from data
+  filter(species == "Gentoo")  # Filters data to only include "Gentoo" species 
+
+ 
+# Creating exploratory scatterplot using the Gentoo dataset  
+gentoo_explorplot <- gentoo_dataset %>% 
+  ggplot(aes(x = body_mass_g, y = flipper_length_mm)) + 
+  geom_point(color = "darkorange") +
+  labs(
+    title = "Exploratory Scatter Plot of Flipper Length against Body Mass in Gentoo penguins", 
+    x = "Body Mass (g)", 
+    y = "Flipper Length (mm)"
+  ) +
+  theme_bw()
+
+#calling the exploratory plot
+print(gentoo_explorplot)
+
+
+#Saving the initial scatter plot using svglite package. This allows the plot to be saved as a vector file so that if I need to scale it, the resolution will be maintained. 
+
+svglite("figures/gentoo_explorplot.svg", # opening SVG device and saving in the 'figures' folder
+        width = 5.9, height = 5.9) #specifying width and height
+
+#calling the exploratory plot
+gentoo_explorplot 
+
+#closing the SVG (Scalable Vector Graphics) device
+dev.off() 
+
+```
+
+### Hypothesis
+
+The scatter plot of the raw Gentoo data looks as though there is a fairly strong positive correlation between body mass and flipper length, with flipper length increasing as body mass increases. The relationship looks linear. Based on this I have formulated the below hypotheses:
+
+HA - My alternate hypothesis is that there is a correlation between the flipper length (mm) and the body mass (g) of Gentoo penguins.
+
+H0 - My null hypothesis is that there is no correlation between the flipper length (mm) and the body mass (g) of Gentoo penguins.
+
+### Statistical Methods
+
+For this data pipeline analysis I'll be using two statistical methods: Pearson's Correlation Coefficient test and a linear regression.
+
+### **Pearson's Correlation**
+
+Given that my exploratory plot suggests a positive correlation between Gentoo flipper length and body mass, I want to explore this further by performing a Pearson's correlation. This is because it will allow me to quantify the strength and direction of the relationship between body mass and flipper length.
+
+Before doing so, I need to make sure that my data meets the assumptions of a Pearson's test. The data looks linear from the scatter plot, both my variables are continuous, and there don't appear to be any points which majorly deviate from the general trend and appear as significant outliers. Therefore, before I perform a Pearson's correlation coefficient test, the final thing that I need to check is whether both variables are approximately normally distributed.
+
+***Pearson's correlation - checking assumptions***
+
+To gain a holistic and comprehensive understanding of whether the body mass and flipper length variables are normally distributed, I am using two visual methods including histograms and qqplots. These are simple to generate and can help provide an intuitive sense of how the data is distributed.
+
+The code chunk below creates a histogram of gentoo body mass to examine whether it is normally distributed.
+
+```{r}
+
+# Create a histogram for gentoo body mass to examine if it is normally distributed
+bodymass_histogram <- hist(gentoo_dataset$body_mass_g, 
+     main = "Histogram of Body Mass", 
+     xlab = "Body Mass (grams)", 
+     col = "lightblue", 
+     border = "black", 
+     breaks = 20)
+
+#The histogram looks as though body mass is normally distributed
+
+```
+
+The body mass data in the histogram looks normally distributed. The code chunk below is now going to plot a Q-Q plot to further examine if the Gentoo body mass data has a normal distribution.
+
+```{r}
+# Create a qqplot to examine if there is a normal distribution of the gentoo bodymass data
+bodymass_qqplot <- qqnorm(gentoo_dataset$body_mass_g, 
+                 main = "Q-Q Plot of Gentoo body mass")
+
+#adding a reference line that represents where the data would lie if it was perfectly normally distributed
+qqline(gentoo_dataset$body_mass_g, col = "red", lwd = 2) 
+#the qqplot looks as though body mass is normally distributed
+```
+
+The Q-Q plot looks as though body mass is normally distributed as the points mainly follow the line. The code chunk below moves on to using a histogram to assess whether flipper length data is normally distributed as well.
+
+```{r}
+# Create a histogram to examine if there is a normal distribution of the gentoo flipper length
+
+flipperlength_histogram <- hist(gentoo_dataset$flipper_length_mm, 
+     main = "Histogram of Flipper Length", 
+     xlab = "Body Mass (grams)", 
+     col = "lightblue", 
+     border = "black", 
+     breaks = 20)
+
+#The histogram for Gentoo flipper length is possibly a little skewed to the right. 
+```
+
+It looks as though the flipper data is a little skewed to the right and not normally distributed. The code chunk below creates a Q-Q plot to further assess if the flipper data is normally distributed.
+
+```{r}
+# Create a qqplot to examine if there is a normal distribution of the gentoo flipper length data
+flipperlength_qqplot <- qqnorm(gentoo_dataset$flipper_length_mm, 
+                 main = "Q-Q Plot of Gentoo Flipper Length (mm)")
+qqline(gentoo_dataset$flipper_length_mm, col = "red", lwd = 2) #adding a reference line that represents where the data would lie if it was perfectly normally distributed
+```
+
+The qqplot of the gentoo flipper length shows the data points are above the line at either end of the tail, my initial thoughts are that perhaps this is caused by the flipper length data in the histogram looking a little "flat" with lack of a clear peak. However, it doesn't look like a huge deviation from normality and most parametric tests are robust to a deviation like this. I'm still going to try to improve this if possible.
+
+In the code chunk below I am log transforming the flipper length data to try and make it more normally distributed.
+
+```{r}
+#Log transform data and add as a new column called "log_flipper_length"
+gentoo_dataset$log_flipper_length <- log(gentoo_dataset$flipper_length_mm)
+```
+
+I now plot the log transformed flipper length data as a histogram to reassess whether it seems more normally distributed.
+
+```{r}
+#histogram for log transformed flipper length data 
+log_flipperhistogram <- hist(gentoo_dataset$log_flipper_length, 
+     main = "Histogram of log transformed Flipper Length", 
+     xlab = "Log transformed flipper length (mm)", 
+     col = "lightblue", 
+     border = "black", 
+     breaks = 20)
+
+#calling the histogram
+log_flipperhistogram
+
+#The log transformed gentoo flipper length data looks more normally distributed in this histogram now.
+```
+
+The histogram of the log transformed data looks much more normally distributed now, with a clear peak in the middle. The code chunk below creates a Q-Q plot of the log transformed flipper data to further examine if its normally distributed.
+
+```{r}
+#create a qqplot of log transformed flipper data to see if it looks any more normally distributed
+log_flipperqqplot <- qqnorm(gentoo_dataset$log_flipper_length, 
+                 main = "Q-Q Plot of Gentoo log transformed Flipper Length (mm)")
+qqline(gentoo_dataset$log_flipper_length, col = "red", lwd = 2) #adding a reference line that represents where the data would lie if it was perfectly normally distributed
+```
+
+The distribution hasn't changed much and the data points are still above the line at either end. Despite the log transformation not making the Q-Q plot any better, I would still say that the overall appearance of body mass data and flipper length data in the histograms and qqplots appears to conform to normality. There doesn't appear to be a huge deviation from normality and most parametric tests, including pearson's correlation coefficient, are robust to small deviations like this. I also don't want to use a non parametric test instead, because even though it doesn't require data to be normally distributed, these have much lower power. I feel it is still appropriate to use the log transformed data and go ahead with the correlation test for the reasons above.
+
+***Performing Pearson's correlation***
+
+The code chunk below performs the Pearson's correlation test to assess the strength and direction of the linear relationship between Gentoo body mass and Gentoo log transformed flipper length.
+
+```{r echo=TRUE}
+
+
+#Performing pearson's test
+cor_test <- gentoo_dataset %>%
+  with(cor.test(body_mass_g, log_flipper_length, method = "pearson"))
+
+#Printing results
+print(cor_test)
+```
+
+Given that the correlation coefficient is 0.7122052 and the p value is \< 2.2e-16, I can see that there is a significant correlation (which looks like a strong positive linear relationship) between Gentoo body mass and flipper length. I can reject the null hypothesis that there is no correlation. (see results section for further interpretation).
+
+To further investigate the relationship between the two variables I want to follow up with a linear regression model. I have chosen to do this because by looking at the slope of the regression line, I can further confirm whether the slope is significant.
+
+H0 - the slope is not statistically different from 0 HA - the slope is statistically different from 0
+
+A linear model will also help me to quantify how changes in body mass affect the flipper length and examine if body mass is a significant predictor of flipper length. Also, the two variables are both numerical and the relationship appears linear so this model seems appropriate.
+
+### Linear regression
+
+In the below chunk I am now creating and storing the linear regression model in an object called 'gentoo_lm'. I put body mass as my predictor variable and flipper length as my response variable. I have chosen to use the unlogged transformed data in my linear model because for this specific analysis it is biologically easier/more intuitive to use this when thinking about body mass and flipper lengths. When I validate my linear regression, if the residuals don't meet the assumptions, I will consider going back to using logged data, but I presume it will be fine.
+
+```{r}
+#creating linear model with unlogged flipper length as response variable and bodymass as the predictor/explanatory variable. Storing the model in an object called gentoo_lm.
+gentoo_lm_unlogged <- lm(flipper_length_mm ~ body_mass_g, data = gentoo_dataset)
+
+
+#calling the model so that the outputs can be shown and interpreted
+summary(gentoo_lm_unlogged)
+```
+
+***Linear regression - assessing validity***
+
+Now that I have made my linear model, I want to assess the model's validity before I fully interpret the output (in the results section). I will examine whether the residuals meet the assumptions of normality (Q-Q plot) and homoscedasticity (both a scale location plot residuals vs fitted plot).
+
+Q-Q plot to test for normality:
+
+```{r}
+plot(gentoo_lm_unlogged, which = 2)  #which=2 specifies to plot the quantiles of the residuals against the quantiles of a normal distribution
+```
+
+The straight diagonal line indicates a perfectly normal distribution and residuals that follow a normal distribution will ideally follow this line. Although it is not perfect as some points are below the line at the tails, overall I am choosing to interpret the residuals as approximately following a normal distribution since they mainly follow the line.
+
+Residuals vs fitted plot to test for homoscedasticity:
+
+```{r}
+plot(gentoo_lm_unlogged, which = 1) #plots residuals vs fitted to test for homo
+```
+
+In the residuals vs fitted plot the residuals are fairly randomly scattered around the horizontal line at zero and the spread appears relatively constant. The residuals also appear random and not following any specific pattern. As such, I am happy to interpret the residuals as satisfying the assumption of homoscedasticity.
+
+Scale - Location plot to test for homoscedasticity:
+
+```{r}
+plot(gentoo_lm_unlogged, which = 3)  # Scale - location plot to test for homo
+
+#looks fine
+```
+
+In the scale location plot the residuals appear randomly spread around the horizontal line. The line has a slight upwards gradient but overall I am happy to interpret the residuals as satisfying the assumption of homoscedasticity.
+
+##Results
+
+Below is the output of the Pearson's correlation test.
+
+```{r cor test output, echo=FALSE}
+print(cor_test)
+```
+
+The Pearson's test revealed a strong positive correlation, indicating that as body mass increases, flipper length also tends to increase as well. The correlation coefficient (r) was 0.7122052 and showed a significant strong positive linear relationship between the two variables. The p value which was very small (p-value \< 2.2e-16) indicates strong evidence against the null (as it is smaller than 0.05) meaning I can reject the null hypothesis confidently. The confidence interval suggests that the true correlation coefficient falls somewhere between 0.6104679 and 0.7908223, as these are positive values it further supports the interpretation that the correlation is strong and positive.
+
+Below is the output of the linear model.
+
+```{r}
+#calling the model so that the outputs can be shown and interpreted
+summary(gentoo_lm_unlogged)
+```
+
+The slope (0.009341), which represents the body mass in this case, indicates that for every 1g increase in body_mass_g of a Gentoo penguin, their flipper length increases by 0.009341mm. The positive value indicates a significant positive linear relationship. The p value is very small (\<2e-16) highlighting that the slope is statistically significant. As such we have strong evidence to reject the null hypothesis (which is that the slope is 0 and there is no relationship between penguin body mass and flipper length). This corroborates with my analysis in the Pearson's test.
+
+The standard error of the slope is 0.0008533 which is also very small and therefore indicates that the coefficient (slope) for the change in flipper length for one unit increase in body mass is very precise. This is also supported by the large t value of 10.95 that indicates the slope is a significant predictor of flipper length.The p value is \<2e-16, indicating the slope for body mass is highly significant. The intercept value gives an estimate of flipper length when body mass is 0. In this case, it is biologically meaningless as penguin body mass would never be 0.
+
+The adjusted R squared value is 0.5017 meaning that approximately 50.17% of the variation in flipper length can be explained by the body mass of the penguin. This suggests that it is a good model for predicting flipper length from body mass, however there are other factors contributing the the remaining unexplained variation.
+
+The F statistic of the model is 119.8 on 1 and 117 degrees of freedom. The p value of 2.2e-16 is extremely small, indicating that this F statistic is highly statistically significant. As such I am happy that my model has a good fit and that my analysis is valid.
+
+### Results Figure:
+
+The code chunk below creates a scatter plot with a fitted regression line that visualises the positive linear relationship between Gentoo body mass and flipper length.
+
+```{r Plotting Results}
+gentoo_resultsplot <- gentoo_dataset %>% 
+  ggplot(aes(x = body_mass_g, y = flipper_length_mm)) + 
+  geom_point(
+    color = "darkorange"  # Using a colour blind friendly colour for points
+  ) + 
+  geom_smooth(
+    method = "lm", 
+    se = TRUE, 
+    color = "darkblue",  # Colour blind friendly friendly colour for the regression line
+    fill = "lightblue"   # Colour blind friendly colour for the confidence interval
+  ) + 
+  labs(
+    title = "Regression of Flipper Length against Body Mass of Gentoo penguins", 
+    x = "Body Mass (g)", 
+    y = "Flipper Length (mm)"
+  ) +
+  theme_bw()
+
+print(gentoo_resultsplot)
+
+#Saving the initial scatter plot using svglite package. This allows the plot to be saved as a vector file so that if I need to scale it, the resolution will be maintained. 
+
+svglite("figures/gentoo_resultsplot.svg", # opening SVG device and saving in the 'figures' folder
+        width = 5.9, height = 5.9) #specifying width and height
+
+#closing the SVG (Scalable Vector Graphics) device
+dev.off() 
+```
+
+## Discussion
+
+My pearson test analysis highlighted there is enough evidence that the null hypothesis can be rejected and that Gentoo body mass and flipper length have a significant correlation. The follow up linear model highlights that this is a significant positive linear relationship. This is in line with what I would expect as it makes biological sense that flipper length should increase with body mass. Flippers are used as locomotive structures, enabling penguins to properly swim through water. As such, a larger body mass which generates more drag in water benefits from proportionally longer flippers which produce enough thrust for efficient swimming. A correlation and positive relationship in body mass and flipper length would also make sense in enabling balance and stability whilst swimming (mismatches in flipper length and bodymass may lead to energetically inefficient locomotion). Other penguins with a larger body mass and larger flippers, such as Emperor penguins, tend to dive deeper and swim longer distances for prey compared to Adelie penguins for example which have a smaller bodymass and flipper length [1]. As such, when thinking about whether penguins are specialised for diving, it seems likely that flipper length adapts with body mass to produce efficiency in the water.
+
+Given that the adjusted R squared of the linear model is 0.5017, it indicates that the proportion of variation in flipper length that is explained by body mass is 50.17%. This is a fairly high value however the remaining 50% of unexplained variation indicates that there are other biological factors that explain the variation in flipper length. For example, even though the data looks at one species of penguin (Gentoo), it is likely there is still intraspecies variation which could account for the variation in flipper length. For example, individual genetic variation might result in some penguins having shorter or longer flippers simply due to their genetic makeup, and possibly even variation in epigenetic factors.
+
+Furthermore, variation in diet quality and nutrition may also impact flipper length, with penguins that have access to more food resources likely developing maximally compared to those that don't have access to the necessary nutrients during critical growth stages. In particular, I would be interested to explore how the changing ocean temperature is affecting the presence of their key food resources such as crustaceans, small fish and squid. For example, if these resources are migrating elsewhere due to changes in their own environments, are these penguins now having to learn to dive deeper or naviagate further from Biscoe island to forage. If this is the case then could their flipper lengths be evolving to adapt to these new physical demands?
+
+Although all penguins recorded were from Biscoe island and likely shared a similar environment, it is possible that they still experienced differing micro habitats which could affect flipper length. For example, subtle environmental differences such as which side of the island they are nesting on may mean they have become adapted to specialised diving in differing currents. Stronger currents may require penguin flippers to be larger and sturdier compared to coasts of the island with a calmer current where they don't have to deal with these physical demands during their lifetime. Additionally, although the data set records the Gentoo penguins as 'adults', we cannot assume each observation is the exact same age, and as such age is likely also a factor affecting flipper length. For example, younger adults might have smaller less developed flippers compared to older adults. Furthermore, sex could also be a factor contributing to variation if sexual dimorphism is present.
+
+## Future Directions
+
+Future analysis should involve the use of statistical methods such as ANCOVA or more complex linear regression where the co-variates considered above are accounted for. Although caution should be taken not to overfit a model, this will help gain a clearer understanding of the factors that contribute to the variation in flipper length we observe in Gentoo penguins.
+
+A final comment is that in my Pearson test analysis I stated that I wanted to gain a holistic and comprehensive understanding of whether my data (the flipper length and body mass) was normally distributed. However, I only employed visual analysis (histograms and Q-Q plots). Whilst these are still incredibly useful to assess normality, they are limited in that they can be subjective and less precise in detecting very subtle deviations from normality. If I were to repeat this research in future analysis, I would suggest conducting parametric tests such as the Shapiro Wilk test. This will give a quantifiable understanding of whether the distribution significantly deviates from a normal distribution, and can help to further confirm my observations.
+
+## Conclusion
+
+To conclude, the main aim of this analysis pipeline was to investigate if there was a correlation between Gentoo body mass and flipper length. The Pearson's test highlighted a significant correlation between penguin body mass and flipper length. This was followed by a linear model that highlighted this correlation as a significant positive linear relationship and body mass is a significant predictor of flipper length. The model did however suggest there are other biological factors which contribute to the variation we see. As such it is critical that future work considers what these are and to what extent they contribute to the observed variation.
+
+### References
+
+[1] Wienecke, B., Robertson, G., Kirkwood, R. et al. Extreme dives by free-ranging emperor penguins. Polar Biol 30, 133–142 (2007). <https://doi.org/10.1007/s00300-006-0168-8>
+
+------------------------------------------------------------------------
+
+## QUESTION 3: Open Science
+
+### a) GitHub
+
+*Upload your RProject you created for **Question 2** and any files and subfolders used to GitHub. Do not include any identifiers such as your name. Make sure your GitHub repo is public.*
+
+*GitHub link:*
+
+*You will be marked on your repo organisation and readability.*
+
+### b) Share your repo with a partner, download, and try to run their data pipeline.
+
+*Partner's GitHub link:*
+
+*You **must** provide this so I can verify there is no plagiarism between you and your partner.*
+
+### c) Reflect on your experience running their code. (300-500 words)
+
+-   *What elements of your partner's code helped you to understand their data pipeline?*
+
+-   *Did it run? Did you need to fix anything?*
+
+-   *What suggestions would you make for improving their code to make it more understandable or reproducible, and why?*
+
+-   *If you needed to alter your partner's figure using their code, do you think that would be easy or difficult, and why?*
+
+### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
+
+-   *What improvements did they suggest, and do you agree?*
+
+-   *What did you learn about writing code for other people?*
