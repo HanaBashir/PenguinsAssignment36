@@ -13,7 +13,7 @@ Inside this repository you will find:
 9. renv.lock - a file that has captured to state of the project's environment and stored all package dependencies 
 
 Setup Instructions:
-1) Click on PenguinsAssignment36 and copy the url. The url should end with with PenguinsAssignment36 eg like this: https://github.com/githubusername/PenguinsAssignment36
+1) Click on PenguinsAssignment36 and copy the url. The url should end with with PenguinsAssignment36 eg like this: https://github.com/ZigiButtercup/PenguinsAssignment36
 2) Open R studio -> File -> New Project -> Version Control -> Git
 3) Paste the url into the the box that says 'Repository URL'. 
 4) Tick open in new session and click create project. This should download this entire github repository and you should be able to go to you files maanger and see the directory above with all the files.
