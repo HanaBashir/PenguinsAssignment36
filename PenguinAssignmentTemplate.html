@@ -1116,45 +1116,132 @@ words)</h3>
 their data pipeline?</em></li>
 </ul>
 <p>My partner’s code included lots of elements to help me understand
-their code. Firstly, they separate their code into code chunks rather
-than writing one huge chunk of code. This meant that I could run each
-chunk separately and see the output from that chunk before moving on to
-the next. This really helped to understand which part of the code is
-doing what and what it is producing. Secondly, my partner used hashtags
-to provide comments explicitly explaining what every line of code does.
-They didn’t just comment what a chunk was doing, they commented each
-line within the chunk to provide a really detailed explanation. My
-partner also provided a read.me file in their repository which helped to
-gain an initial understanding of what the project was about and what was
-in the important files. In most of their code they also used tabs and
-indentations which made the code more readable. There was just one part
-where for some reason this didn’t format in the same way (explained
-below). Finally, my partner also explained in plain text what the chunk
-was about to do by saying ‘here I…’ and then having the chunk below
-this. Overall, I think they made their code so it could be well
-understood.</p>
+their code. Firstly, for the most part, they separated their code into
+code chunks rather than writing one huge chunk of code. This meant that
+I could run each chunk separately and see the output from that chunk
+before moving on to the next. This really helped to understand which
+part of the code is doing what and what it is producing. Secondly, my
+partner used hashtags to provide comments explicitly explaining what
+every line of code does. They didn’t just comment what a chunk was
+doing, they commented each line within the chunk to provide a really
+detailed explanation. My partner also provided a read.me file in their
+repository which helped to gain an initial understanding of what the
+project was about and what was in the important files. In most of their
+code they also used tabs and indentations which made the code more
+readable. There was just one part where for some reason this didn’t
+format in the same way (explained below). Finally, my partner also
+explained in plain text what the chunk was about to do by saying ‘here
+I…’ and then having the chunk below this. They also labelled all their
+chunks which meant I knew the main idea of what each was doing. Overall,
+I think they made their code so it could be well understood.</p>
 <ul>
 <li><em>Did it run? Did you need to fix anything?</em></li>
 </ul>
-<p>I downloaded the whole repository and it ran the first time with no
-issues.</p>
+<p>It ran the first time with no issues.</p>
 <ul>
-<li><p><em>What suggestions would you make for improving their code to
-make it more understandable or reproducible, and why?</em></p></li>
-<li><p><em>If you needed to alter your partner’s figure using their
-code, do you think that would be easy or difficult, and
-why?</em></p></li>
+<li><em>What suggestions would you make for improving their code to make
+it more understandable or reproducible, and why?</em></li>
 </ul>
+<p>Making it more understandable: although the chunks were mainly fine,
+there were was one chunk that I feel could have possibly been split up
+for better readability. The density plots for body mass and flipper
+length were in one large chunk but I feel if they had been separate then
+it would be more easy to run the first chunk and view the corresponding
+plot then run the second chunk and view the corresponding plot.
+Furthermore, my partner performed the statistical test inside the
+section about results. To improve readability it may have been worth
+performing the stats test inside the statistical methods section.
+Additionally, the formatting of the code producing the body mass density
+plot could have been made use of indentations and tabs, rather than a
+big block paragraph, to improve readability. The section of code below
+does this and it reads much more easily. My partner also included the
+initial exploratory plot at the beginning of the results section. I feel
+it would have possibly made more sense to do this near the introduction
+or around the hypotheses section so that we can gain a visual
+understanding of what the code is exploring at the very beginning rather
+than towards the end. To make the code more reproducible my partner
+could have coded the functions into a separate ‘functions’ file rather
+than directly into the script. This is useful because if the function
+needs to be edited then you would only have to edit it once in the
+separate script. source() in the main script will then mean the edits
+are reflected everywhere the function is being used. (I believe my
+partner updated her script so this may be reflected in her repository
+now). Other than this, my partner used renv, github and relative
+filepaths etc which made it really reproducible.</p>
+<ul>
+<li><em>If you needed to alter your partner’s figure using their code,
+do you think that would be easy or difficult, and why?</em></li>
+</ul>
+<p>Parts would be easy and parts would be difficult. For the most part,
+the code is formatted really nicely with tabs and indentations, making
+it easy to identify where ggplot() and other functions start and end,
+and as such edit these if need be. However, the body mass density plot,
+as mentioned above had a more difficult paragraph-like format to read
+because the comments spilled over onto the next line and fit between the
+lines of code. This might make it slightly harder to locate parts of the
+code and edit on first glance. Furthermore, my partners code for
+plotting the graphs was all inside the main script which in this case
+made it easy to immediately locate and understand what I would want to
+change. However, I would suggest that if my partner was ever creating a
+script with lots of graphs, it would be beneficial to turn the code that
+plots the graph into a function, and then keep it in another separate
+functions folder, for example called ‘plotting.R’. This would prevent a
+script from become excessively long and cluttered, and it also means
+that once again reproducibility is improved as if a plotting function
+needs to be changed, this can be done in the separate file and will then
+be reflected automatically in the main script if source() is used.</p>
 </div>
 <div id="d-reflect-on-your-own-code-based-on-your-experience-with-your-partners-code-and-their-review-of-yours.-300-500-words" class="section level3">
 <h3>d) Reflect on your own code based on your experience with your
 partner’s code and their review of yours. (300-500 words)</h3>
 <ul>
-<li><p><em>What improvements did they suggest, and do you
-agree?</em></p></li>
-<li><p><em>What did you learn about writing code for other
-people?</em></p></li>
+<li><em>What improvements did they suggest, and do you agree?</em></li>
 </ul>
+<p>My partner said that overall my code was highly organised however
+there were some areas where a few extra annotations could have been
+useful. For example at the start of the script in the chunk with
+library() in it I didn’t comment out explicitly that this was opening
+the packages. I agree I should have done this as in terms of
+reproducibility, my code is supposed to be accessible to everyone and
+even though I know what library() means, others may not. They also said
+abbreviations could be confusing as at one point I said ‘homo’ in a
+comment rather than homoscedasticity. I completely agree next time it
+would be beneficial not to abbreviate. Additionally my partner
+highlighted a piece of redundant code: colnames(penguins_raw) which was
+repeated. I agree this is distracting and wasn’t absolutely necessary.
+Finally my partner said that the names of my plots could have been
+clearer. I named them gentoo_explorplot and gentoo_resultsplot. I think
+gentoo_exploratoryplot would have been better, but my partner also said
+specifying the results plot as gentoo_scatterplot could be better. I
+don’t agree with this simply because my exploratory figure was also a
+scatterplot so it will create confusion.</p>
+<ul>
+<li><em>What did you learn about writing code for other
+people?</em></li>
+</ul>
+<p>When writing code for others I have learnt that no matter the coding
+capabilities of the reader, it is always critical to use comments to
+spell out the purpose of what I am doing and why. This means that
+individuals can follow the code when first reading it but also if they
+(or myself) want to come back to it years later. It also enhances
+reproducibility as if others are using my code and data set but can’t
+reproduce the same results, a precisely annotated script increases the
+likelihood of finding errors. Furthermore, the use of a Read Me file is
+useful for explaining to others how to use the script. I also learnt
+that the organisation of code is important in creating a good user
+experience; use of a consistent style and codes that are separated into
+clear labelled chunks are much more approachable compared to all lines
+of code within a single chunk block. Separate chunks which can be run
+separately also allow easier detection of errors, increasing
+reproducibility. Additionally, I’ve learnt that using raw file paths
+should be avoided, and instead relative file paths using the
+here::here() function are optimal for reproducibility. Finally, I gained
+an understanding that when writing code for others, the use of tools
+such as renv is important for managing package dependencies, and version
+control platforms such as Github are helpful when sharing code with
+others and tracking changes. Overall I enjoyed the experience and now
+feel more confident that I can produce reproducible coding projects
+now!</p>
 </div>
 </div>
 
