@@ -206,6 +206,9 @@ penguins_clean <- penguins_raw %>%
 
 # Checking the output of the function to make sure data is cleaned
 colnames(penguins_clean)
+
+#saving clean data to a file called penguins_clean in the 'data' folder on github
+write_csv(penguins_clean, here("data", "penguins_clean.csv"))
 ```
 
 After loading, saving and cleaning the raw data, I will now begin my analysis pipeline below.
@@ -385,7 +388,8 @@ Given that the correlation coefficient is 0.7122052 and the p value is \< 2.2e-1
 
 To further investigate the relationship between the two variables I want to follow up with a linear regression model. I have chosen to do this because by looking at the slope of the regression line, I can further confirm whether the slope is significant.
 
-H0 - the slope is not statistically different from 0 HA - the slope is statistically different from 0
+H0 - the slope is not statistically different from 0
+HA - the slope is statistically different from 0
 
 A linear model will also help me to quantify how changes in body mass affect the flipper length and examine if body mass is a significant predictor of flipper length. Also, the two variables are both numerical and the relationship appears linear so this model seems appropriate.
 
@@ -523,13 +527,13 @@ To conclude, the main aim of this analysis pipeline was to investigate if there 
 
 *Upload your RProject you created for **Question 2** and any files and subfolders used to GitHub. Do not include any identifiers such as your name. Make sure your GitHub repo is public.*
 
-*GitHub link:*
+*GitHub link:* https://github.com/ZigiButtercup/PenguinsAssignment36
 
 *You will be marked on your repo organisation and readability.*
 
 ### b) Share your repo with a partner, download, and try to run their data pipeline.
 
-*Partner's GitHub link:*
+*Partner's GitHub link:* https://github.com/daisyjeans/Reproducible-Figures
 
 *You **must** provide this so I can verify there is no plagiarism between you and your partner.*
 
@@ -537,14 +541,26 @@ To conclude, the main aim of this analysis pipeline was to investigate if there 
 
 -   *What elements of your partner's code helped you to understand their data pipeline?*
 
+My partner's code included lots of elements to help me understand their code. Firstly, they separate their code into code chunks rather than writing one huge chunk of code. This meant that I could run each chunk separately and see the output from that chunk before moving on to the next. This really helped to understand which part of the code is doing what and what it is producing. Secondly, my partner used hashtags to provide comments explicitly explaining what every line of code does. They didn't just comment what a chunk was doing, they commented each line within the chunk to provide a really detailed explanation. My partner also provided a read.me file in their repository which helped to gain an initial understanding of what the project was about and what was in the important files. In most of their code they also used tabs and indentations which made the code more readable. There was just one part where for some reason this didn't format in the same way (explained below). Finally, my partner also explained in plain text what the chunk was about to do by saying 'here I...' and then having the chunk below this. They also labelled all their chunks which meant I knew the main idea of what each was doing. Overall, I think they made their code so it could be well understood.
+
+
 -   *Did it run? Did you need to fix anything?*
+
+It ran the first time with no issues and also rendered. 
 
 -   *What suggestions would you make for improving their code to make it more understandable or reproducible, and why?*
 
+There was one section at the start of the code where the code could have been formatted to be more readable. When my partner coded the density plot for body mass by species there weren't indentations or tabs so it look like one big paragraph. Having said this, they did still comment out every single line of the code so it was still completely understandable (just not as visually appealing). I would suggest altering the format of the code though, for example when using ggplot() have each function directly below this with the + sign at the end of each line. In the code directly below for the density plot of flipper length by species my partner formatted it out nicely so it was more readable however there were less comments describing what each individual line did. To improve the code I suggest making sure that includes both good formatting (indentations and tabs) and commenting out each line together. If my partner had done this for both plots it would have provided more consistency when reading the code as well. having said this, I actually don't know if this is possible as maybe the format is like these because the commented out hashtags  run over to the next line. 
+
 -   *If you needed to alter your partner's figure using their code, do you think that would be easy or difficult, and why?*
+
+I think it it would be easy to alter the figures because the code to plot
+- 
 
 ### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
 
 -   *What improvements did they suggest, and do you agree?*
 
 -   *What did you learn about writing code for other people?*
+
+When writing code for others I have learnt that no matter the coding capabilities of the reader, it is always critical to use comments to spell out the purpose of what I am doing and why. This means that individuals can follow the code when first reading it but also if they (or myself) want to come back to it years later. It also enhances reproducibility as if others are using my code and data set but can't reproduce the same results, a precisely annotated script increases the likelihood of finding errors. Furthermore, the use of a Read Me file is useful for explaining to others how to use the script. I also learnt that the organisation of code is important in creating a good user experience; use of a consistent style and codes that are separated into clear labelled chunks are much more approachable compared to all lines of code within a single chunk block. Separate chunks which can be run separately also allow easier detection of errors, increasing reproducibility. Additionally, I've learnt that using raw file paths should be avoided, and instead relative file paths using the here::here() function are optimal for reproducibility. Finally, I gained an understanding that when writing code for others, the use of tools such as renv is important for managing package dependencies, and version control platforms such as Github are helpful when sharing code with others and tracking changes. Overall I enjoyed the experience and now feel more confident that I can produce reproducible coding projects now!
