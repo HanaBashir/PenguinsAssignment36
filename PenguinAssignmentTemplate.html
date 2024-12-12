@@ -575,12 +575,12 @@ different islands (Torgersen, Biscoe and Dream) in the Anvers region of
 the Palmer archipelago, Antarctica. It was collected between 2007 and
 2009, and there are 344 observations and 17 variables. Penguins are
 highly specialised diving birds and as such, in this specific analysis I
-intend to use the data to explore whether there is a correlation between
-the body mass and flipper length in Gentoo penguins. If there is, This
-is because I would expect there would be a relationship as it makes
-sense that to maintain a specialised ability to dive efficiently,
-penguins would have some kind of proportionality associated with flipper
-length and body mass.</p>
+intend to use the data to explore and quantify whether there is a
+relationship between the body mass and flipper length in Gentoo
+penguins. This is because I would expect there would be a relationship
+as it makes sense that to maintain a specialised ability to dive
+efficiently, penguins would have some kind of proportionality associated
+with flipper length and body mass.</p>
 <p><strong>Creating an exploratory scatter plot</strong></p>
 <p>I will first create an exploratory scatter plot to examine the
 relationship between body mass and flipper length data. I have chosen to
@@ -882,7 +882,10 @@ satisfying the assumption of homoscedasticity.</p>
 around the horizontal line. The line has a slight upwards gradient but
 overall I am happy to interpret the residuals as satisfying the
 assumption of homoscedasticity.</p>
-<p>##Results</p>
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
 <p>Below is the output of the Pearson’s correlation test.</p>
 <pre><code>## 
 ##  Pearson&#39;s product-moment correlation
@@ -949,12 +952,11 @@ case, it is biologically meaningless as penguin body mass would never be
 50.17% of the variation in flipper length can be explained by the body
 mass of the penguin. This suggests that it is a good model for
 predicting flipper length from body mass, however there are other
-factors contributing the the remaining unexplained variation.</p>
+factors contributing the remaining unexplained variation.</p>
 <p>The F statistic of the model is 119.8 on 1 and 117 degrees of
 freedom. The p value of 2.2e-16 is extremely small, indicating that this
 F statistic is highly statistically significant. As such I am happy that
 my model has a good fit and that my analysis is valid.</p>
-</div>
 <div id="results-figure" class="section level3">
 <h3>Results Figure:</h3>
 <p>The code chunk below creates a scatter plot with a fitted regression
@@ -997,22 +999,23 @@ dev.off() </code></pre>
 <p>My pearson test analysis highlighted there is enough evidence that
 the null hypothesis can be rejected and that Gentoo body mass and
 flipper length have a significant correlation. The follow up linear
-model highlights that this is a significant positive linear
-relationship. This is in line with what I would expect as it makes
-biological sense that flipper length should increase with body mass.
-Flippers are used as locomotive structures, enabling penguins to
-properly swim through water. As such, a larger body mass which generates
-more drag in water benefits from proportionally longer flippers which
-produce enough thrust for efficient swimming. A correlation and positive
-relationship in body mass and flipper length would also make sense in
-enabling balance and stability whilst swimming (mismatches in flipper
-length and bodymass may lead to energetically inefficient locomotion).
-Other penguins with a larger body mass and larger flippers, such as
-Emperor penguins, tend to dive deeper and swim longer distances for prey
-compared to Adelie penguins for example which have a smaller bodymass
-and flipper length [1]. As such, when thinking about whether penguins
-are specialised for diving, it seems likely that flipper length adapts
-with body mass to produce efficiency in the water.</p>
+model highlights that this is a significant positive linear relationship
+and that body mass is a significant predictor of flipper length. This is
+in line with what I would expect as it makes biological sense that
+flipper length should increase with body mass. Flippers are used as
+locomotive structures, enabling penguins to properly swim through water.
+As such, a larger body mass which generates more drag in water benefits
+from proportionally longer flippers which produce enough thrust for
+efficient swimming. A correlation and positive relationship in body mass
+and flipper length would also make sense in enabling balance and
+stability whilst swimming (mismatches in flipper length and bodymass may
+lead to energetically inefficient locomotion). Other penguins with a
+larger body mass and larger flippers, such as Emperor penguins, tend to
+dive deeper and swim longer distances for prey compared to Adelie
+penguins for example which have a smaller bodymass and flipper length
+[1]. As such, when thinking about whether penguins are specialised for
+diving, it seems likely that flipper length adapts with body mass to
+produce efficiency in the water.</p>
 <p>Given that the adjusted R squared of the linear model is 0.5017, it
 indicates that the proportion of variation in flipper length that is
 explained by body mass is 50.17%. This is a fairly high value however
